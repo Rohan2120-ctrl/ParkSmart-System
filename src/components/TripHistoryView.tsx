@@ -124,7 +124,7 @@ export function TripHistoryView({
             Trip History &amp; Dispatch Ledger
           </h1>
           <p className="text-sm text-slate-400">
-            Persistent bookings stored in SQLite database for your signed-in account.
+            Persistent bookings stored in Supabase for your signed-in account.
           </p>
         </div>
         <button

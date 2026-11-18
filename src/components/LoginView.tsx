@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import {
   AlertCircle,
   ArrowRight,
+  CheckCircle2,
   Eye,
   EyeOff,
   Loader2,
@@ -26,11 +27,13 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setInfoMessage(null);
 
     const trimmedEmail = email.trim();
     const trimmedName = displayName.trim();
@@ -50,18 +53,30 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
 
     setIsSubmitting(true);
     try {
-      const user =
-        mode === 'register'
-          ? await registerUser({
-              displayName: trimmedName,
-              email: trimmedEmail,
-              password,
-            })
-          : await loginUser({
-              email: trimmedEmail,
-              password,
-            });
-      onAuthSuccess(user);
+      if (mode === 'register') {
+        const result = await registerUser({
+          displayName: trimmedName,
+          email: trimmedEmail,
+          password,
+        });
+        if (result.requiresEmailConfirmation) {
+          setInfoMessage(
+            'Account created in Supabase! Please check your email inbox to confirm your address before signing in.'
+          );
+          setMode('login');
+          setIsSubmitting(false);
+          return;
+        }
+        if (result.user) {
+          onAuthSuccess(result.user);
+        }
+      } else {
+        const user = await loginUser({
+          email: trimmedEmail,
+          password,
+        });
+        onAuthSuccess(user);
+      }
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Unable to authenticate. Please try again.'
@@ -96,7 +111,7 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
             Real-time road routing, instant fare clarity, and persistent trip records.
           </h2>
           <p className="text-sm text-slate-300 max-w-md leading-relaxed">
-            Pin any pickup and drop corridor across India, inspect live Bike, Auto, and Car AC fares, and store every dispatched booking in your SQLite account database.
+            Pin any pickup and drop corridor across India, inspect live Bike, Auto, and Car AC fares, and store every dispatched booking in your Supabase account database.
           </p>
         </div>
       </div>
@@ -118,7 +133,7 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
             </p>
           </div>
 
-          {/* Primary SQL Auth Form Card */}
+          {/* Primary Supabase Auth Form Card */}
           <form
             onSubmit={handleSubmit}
             className="bg-[#0f172a] border border-slate-800 rounded-xl p-6 space-y-4"
@@ -151,6 +166,7 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
                 onClick={() => {
                   setMode('register');
                   setErrorMessage(null);
+                  setInfoMessage(null);
                 }}
                 className={`py-2 rounded-md text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
                   mode === 'register'
@@ -161,6 +177,16 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
                 Create Account
               </button>
             </div>
+
+            {infoMessage && (
+              <div
+                role="status"
+                className="flex items-start gap-2.5 p-3.5 rounded-lg bg-emerald-950/50 border border-emerald-800/70 text-sm text-emerald-200"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span>{infoMessage}</span>
+              </div>
+            )}
 
             {errorMessage && (
               <div
@@ -259,7 +285,7 @@ export function LoginView({ onAuthSuccess }: LoginViewProps) {
             <div className="flex items-start gap-2.5 text-xs text-slate-400 pt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span>
-                Your profile and booking records are scoped strictly to your authenticated rider session in SQLite.
+                Your profile and booking records are scoped strictly to your authenticated rider session in Supabase.
               </span>
             </div>
           </form>

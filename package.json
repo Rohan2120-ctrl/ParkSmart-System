@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run build && ./server_bin",
     "start": "./server_bin",
-    "build": "vite build && gcc -O2 -Wall -Wextra -pthread -o server_bin server.c -lm -ldl",
+    "build": "vite build && gcc -O2 -Wall -Wextra -pthread -o server_bin server.c -lm",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js server_bin",
     "lint": "tsc --noEmit"
@@ -14,6 +14,7 @@
   "dependencies": {
     "@firebase/eslint-plugin-security-rules": "^0.0.2",
     "@google/genai": "^2.4.0",
+    "@supabase/supabase-js": "^2.119.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/leaflet": "^1.9.22",
     "@vitejs/plugin-react": "^6.1.1",

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { fetchBookings, getCurrentUser, logoutUser } from './api';
+import { supabase } from './supabase';
 import { BookingWorkspace } from './components/BookingWorkspace';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { FareGuideView } from './components/FareGuideView';
@@ -57,8 +58,29 @@ function AppShell() {
           setAuthReady(true);
         }
       });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        if (!cancelled) {
+          setUser(null);
+          setBookings([]);
+          setAuthReady(true);
+        }
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        void getCurrentUser().then((currentUser) => {
+          if (!cancelled && currentUser) {
+            setUser(currentUser);
+            setAuthReady(true);
+          }
+        });
+      }
+    });
+
     return () => {
       cancelled = true;
+      subscription.unsubscribe();
     };
   }, []);
 

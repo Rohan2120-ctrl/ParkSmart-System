@@ -315,7 +315,7 @@ export function BookingWorkspace({
 
       await onBookingsChanged();
       setActiveDispatchId(docId);
-      onToast(`Ride ${dispatch.booking_code} confirmed & saved to SQLite database.`);
+      onToast(`Ride ${dispatch.booking_code} confirmed & saved to Supabase.`);
     } catch (err) {
       onToast(
         err instanceof Error ? err.message : 'Unable to save booking right now.',
@@ -787,7 +787,7 @@ export function BookingWorkspace({
 
           {bookings.length === 0 ? (
             <p className="text-xs text-slate-500">
-              No saved bookings yet. Your confirmed rides will sync here from the SQLite database.
+              No saved bookings yet. Your confirmed rides will sync here from Supabase.
             </p>
           ) : (
             <div className="space-y-2">
