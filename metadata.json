@@ -1,0 +1,6 @@
+{
+  "name": "TaxiBook India",
+  "description": "Interactive Indian taxi booking and OSRM road-routing platform with Google login and Cloud Firestore ride history.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
